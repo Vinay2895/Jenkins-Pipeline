@@ -1,0 +1,46 @@
+cd /opt/Apache/webapps/manager/META-INF/
+VIM Context.xml --- here i changed the classname remotecidrrvalve to remoteaddrvalve so it doesnt throw 404 error 
+ -----------------------------------------------------
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<Context antiResourceLocking="false" privileged="true" >
+  <CookieProcessor className="org.apache.tomcat.util.http.Rfc6265CookieProcessor"
+                   sameSiteCookies="strict" />
+
+  <Valve className="org.apache.catalina.valves.RemoteAddrValve"
+         allow=".*" />
+
+  <Manager sessionAttributeValueClassNameFilter="java\.lang\.(?:Boolean|Integer|Long|Number|String)|org\.apache\.catalina\.filters\.CsrfPreventionFilter\$LruCache(?:\$1)?|java\.util\.(?:Linked)?HashMap"/>
+</Context>
+==================================================
+
+vim tomcat-users.xml --> path cd /opt/Apache/conf
+<?xml version='1.0' encoding='utf-8'?>
+<tomcat-users>
+  <role rolename='manager-gui'/>
+  <role rolename='manager-html'/>
+  <role rolename='manager-script'/>
+  <role rolename='manager-status'/>
+  <user username='tomcat' password='tomcat' roles='manager-gui,manager-html,manager-script,manager-status'/>
+</tomcat-users>
+----------------------------------------------------
+
+
+
+
+
