@@ -1,0 +1,33 @@
+git branch: 'main', url: 'https://github.com/Vinay2895/mindcircuit16d.git'
+sh 'mvn clean install'
+deploy adapters: [tomcat9(alternativeDeploymentContext: '', credentialsId: 'tomcat', path: '', url: 'http://ec2-3-89-45-20.compute-1.amazonaws.com:8090/')], contextPath: 'my-app', onFailure: false, war: '**/*.war'
+
+Groovy Script for pipeline
+
+
+pipeline {
+    agent any
+
+    stages {
+        stage('SCM') {
+            steps {
+			echo 'Pulling pom.xml from github'
+                    git branch: 'main', url: 'https://github.com/Vinay2895/mindcircuit16d.git'
+                
+            }
+        }
+		stage('Building war file') {
+            steps {
+			echo 'building artifacts using maven'
+                    sh 'mvn clean install'
+            }
+        }
+		stage('Tomcat deployment') {
+            steps {
+			echo 'deploying build war file to tomcat server which is running by new instance'
+                    deploy adapters: [tomcat9(alternativeDeploymentContext: '', credentialsId: 'tomcat', path: '', url: 'http://ec2-3-89-45-20.compute-1.amazonaws.com:8090/')], contextPath: 'my-app', onFailure: false, war: '**/*.war'
+                
+            }
+        }
+    }
+}
