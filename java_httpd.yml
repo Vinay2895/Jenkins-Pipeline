@@ -14,17 +14,11 @@
         name: httpd
         state: present
 
-    # -------------------------
-    # Find Java installation
-    # -------------------------
     - name: Find Java executable
       ansible.builtin.shell: "readlink -f $(which java)"
       register: java_path
       changed_when: false
 
-    # -------------------------
-    # Set JAVA_HOME
-    # -------------------------
     - name: Set JAVA_HOME globally
       ansible.builtin.lineinfile:
         path: /etc/profile.d/java.sh
@@ -41,9 +35,6 @@
         line: 'export PATH=$JAVA_HOME/bin:$PATH'
         state: present
 
-    # -------------------------
-    # Enable and start Java
-    # -------------------------
     - name: Enable Java environment
       ansible.builtin.shell: |
         source /etc/profile.d/java.sh
@@ -51,18 +42,12 @@
         executable: /bin/bash
       changed_when: false
 
-    # -------------------------
-    # Enable and start HTTPD
-    # -------------------------
     - name: Enable and start HTTPD
       ansible.builtin.systemd:
         name: httpd
         enabled: yes
         state: started
-
-    # -------------------------
-    # Verify Java
-    # -------------------------
+-
     - name: Check Java version
       ansible.builtin.command: java -version
       register: java_version
