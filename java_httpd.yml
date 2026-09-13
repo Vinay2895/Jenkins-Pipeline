@@ -1,0 +1,73 @@
+---
+- name: Install Java and HTTPD
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Install Java 17
+      ansible.builtin.dnf:
+        name: java-17-amazon-corretto-devel
+        state: present
+
+    - name: Install Apache HTTPD
+      ansible.builtin.dnf:
+        name: httpd
+        state: present
+
+    # -------------------------
+    # Find Java installation
+    # -------------------------
+    - name: Find Java executable
+      ansible.builtin.shell: "readlink -f $(which java)"
+      register: java_path
+      changed_when: false
+
+    # -------------------------
+    # Set JAVA_HOME
+    # -------------------------
+    - name: Set JAVA_HOME globally
+      ansible.builtin.lineinfile:
+        path: /etc/profile.d/java.sh
+        create: yes
+        mode: '0644'
+        line: 'export JAVA_HOME={{ java_path.stdout | regex_replace("/bin/java$", "") }}'
+        state: present
+
+    - name: Add Java to PATH
+      ansible.builtin.lineinfile:
+        path: /etc/profile.d/java.sh
+        create: yes
+        mode: '0644'
+        line: 'export PATH=$JAVA_HOME/bin:$PATH'
+        state: present
+
+    # -------------------------
+    # Enable and start Java
+    # -------------------------
+    - name: Enable Java environment
+      ansible.builtin.shell: |
+        source /etc/profile.d/java.sh
+      args:
+        executable: /bin/bash
+      changed_when: false
+
+    # -------------------------
+    # Enable and start HTTPD
+    # -------------------------
+    - name: Enable and start HTTPD
+      ansible.builtin.systemd:
+        name: httpd
+        enabled: yes
+        state: started
+
+    # -------------------------
+    # Verify Java
+    # -------------------------
+    - name: Check Java version
+      ansible.builtin.command: java -version
+      register: java_version
+      changed_when: false
+
+    - name: Display Java version
+      ansible.builtin.debug:
+        var: java_version.stderr
