@@ -53,6 +53,6 @@
       register: java_version
       changed_when: false
 
-    - name: Display java version
+    - name: Display Java version
       ansible.builtin.debug:
         var: java_version.stderr
