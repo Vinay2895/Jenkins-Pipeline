@@ -11,20 +11,20 @@ pipeline {
     stages {
         stage('SCM') {
             steps {
-			echo 'Pulling pom.xml from github'
+			echo 'Pulling pom.xml from GitHub repo'
                     git branch: 'main', url: 'https://github.com/Vinay2895/mindcircuit16d.git'
                 
             }
         }
 		stage('Building war file') {
             steps {
-			echo 'building artifacts using maven'
+			echo 'Building only artifact using Maven'
                     sh 'mvn clean install'
             }
         }
 		stage('Tomcat deployment') {
             steps {
-			echo 'deploying build war file to tomcat server which is running by new instance'
+			echo 'Deploying the built WAR file to the Tomcat server which is running on a new instance'
                     deploy adapters: [tomcat9(alternativeDeploymentContext: '', credentialsId: 'tomcat', path: '', url: 'http://ec2-3-89-45-20.compute-1.amazonaws.com:8090/')], contextPath: 'my-app', onFailure: false, war: '**/*.war'
                 
             }
